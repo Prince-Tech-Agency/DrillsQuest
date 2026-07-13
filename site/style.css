@@ -266,6 +266,27 @@ h1,h2,h3{ font-family:var(--font-display); font-weight:600; letter-spacing:-0.01
 .product-meta{ display:flex; justify-content:space-between; font-size:0.85rem; color:var(--ink-soft); }
 .product-meta .price{ color:var(--gold); font-weight:600; }
 
+.grid-more-wrap{
+  display:flex;
+  justify-content:center;
+  margin-top:3rem;
+}
+.grid-more-wrap #seeMoreBtn{
+  padding:1rem 2.3rem;
+  font-size:0.78rem;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  font-weight:600;
+  border:1px solid var(--gold);
+  background:transparent;
+  color:var(--gold);
+  transition:background .3s var(--ease), color .3s var(--ease);
+}
+.grid-more-wrap #seeMoreBtn:hover{
+  background:var(--gold);
+  color:var(--gold-ink);
+}
+
 /* ============================================================
    about
    ============================================================ */
