@@ -1,0 +1,24 @@
+{
+  "products": [
+    {
+      "id": "DR-005",
+      "name": "Shirt",
+      "category": "Tops",
+      "price": 50000,
+      "image": "images/uploads/emma.jpg",
+      "sizes": [
+        {
+          "size": "M"
+        },
+        {
+          "size": "L"
+        },
+        {
+          "size": "S"
+        }
+      ],
+      "limited": "1000",
+      "desc": "Perfect Shirt"
+    }
+  ]
+}
