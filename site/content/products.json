@@ -55,6 +55,20 @@
       ],
       "limited": "",
       "desc": "Structured croc-embossed leather briefcase with dual front pockets, secure top lock, and a padded top handle."
+    },
+    {
+      "id": "DR-005",
+      "name": "Shirt",
+      "category": "Tops",
+      "price": 50000,
+      "image": "images/uploads/emma.jpg",
+      "sizes": [
+        { "size": "M" },
+        { "size": "L" },
+        { "size": "S" }
+      ],
+      "limited": "1000",
+      "desc": "Perfect Shirt"
     }
   ]
 }
