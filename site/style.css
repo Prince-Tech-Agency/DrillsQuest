@@ -269,7 +269,7 @@ h1,h2,h3{ font-family:var(--font-display); font-weight:600; letter-spacing:-0.01
 .grid-more-wrap{
   display:flex;
   justify-content:center;
-  margin-top:3rem;
+  margin-top:5rem;
 }
 .grid-more-wrap #seeMoreBtn{
   padding:1rem 2.3rem;
