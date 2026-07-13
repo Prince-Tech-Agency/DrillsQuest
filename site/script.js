@@ -17,7 +17,7 @@ const money = (n) => "₦" + n.toLocaleString("en-NG");
 /* ---------------------------------------------------------
    GRID PAGINATION SETTINGS
 --------------------------------------------------------- */
-const PRODUCTS_PER_PAGE = 8; // change this number to show more/fewer per page
+const PRODUCTS_PER_PAGE = 4; // change this number to show more/fewer per page
 let visibleCount = PRODUCTS_PER_PAGE;
 
 /* ---------------------------------------------------------
