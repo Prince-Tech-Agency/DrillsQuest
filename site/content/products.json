@@ -7,9 +7,15 @@
       "price": 50000,
       "image": "images/tee.jpg",
       "sizes": [
-        { "size": "M" },
-        { "size": "L" },
-        { "size": "XL" }
+        {
+          "size": "M"
+        },
+        {
+          "size": "L"
+        },
+        {
+          "size": "XL"
+        }
       ],
       "limited": "",
       "desc": "Heavyweight oversized cotton tee with a large graphic portrait print across the front. Drop-shoulder, boxy fit."
@@ -21,8 +27,12 @@
       "price": 25000,
       "image": "images/polo.jpg",
       "sizes": [
-        { "size": "L" },
-        { "size": "XL" }
+        {
+          "size": "L"
+        },
+        {
+          "size": "XL"
+        }
       ],
       "limited": "Only 5 left",
       "desc": "Classic pique polo in a black, heather grey and white colorblock, with ribbed tipped collar and cuffs. Extremely limited — only 5 pieces exist."
@@ -34,12 +44,24 @@
       "price": 60000,
       "image": "images/sneaker.jpg",
       "sizes": [
-        { "size": "40" },
-        { "size": "41" },
-        { "size": "42" },
-        { "size": "43" },
-        { "size": "44" },
-        { "size": "45" }
+        {
+          "size": "40"
+        },
+        {
+          "size": "41"
+        },
+        {
+          "size": "42"
+        },
+        {
+          "size": "43"
+        },
+        {
+          "size": "44"
+        },
+        {
+          "size": "45"
+        }
       ],
       "limited": "",
       "desc": "Low-profile canvas slip-on with a clean white outsole. Easy on, easy off, built for everyday wear."
@@ -51,24 +73,28 @@
       "price": 130000,
       "image": "images/bag.jpg",
       "sizes": [
-        { "size": "One Size" }
+        {
+          "size": "One Size"
+        }
       ],
       "limited": "",
       "desc": "Structured croc-embossed leather briefcase with dual front pockets, secure top lock, and a padded top handle."
     },
     {
-      "id": "DR-005",
-      "name": "Shirt",
+      "id": "Dr-005",
+      "name": "Shirts",
       "category": "Tops",
-      "price": 50000,
+      "price": 343433,
       "image": "images/uploads/emma.jpg",
       "sizes": [
-        { "size": "M" },
-        { "size": "L" },
-        { "size": "S" }
+        {
+          "size": "S"
+        },
+        {
+          "size": "M"
+        }
       ],
-      "limited": "1000",
-      "desc": "Perfect Shirt"
+      "desc": "ADADFADFAFD"
     }
   ]
 }
