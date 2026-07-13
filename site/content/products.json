@@ -79,31 +79,6 @@
       ],
       "limited": "",
       "desc": "Structured croc-embossed leather briefcase with dual front pockets, secure top lock, and a padded top handle."
-    },
-    {
-      "id": "Dr-005",
-      "name": "Shirts",
-      "category": "Tops",
-      "price": 343433,
-      "image": "images/uploads/emma.jpg",
-      "sizes": [
-        {
-          "size": "S"
-        },
-        {
-          "size": "M"
-        }
-      ],
-      "desc": "ADADFADFAFD"
-    },
-    {
-      "id": "DR-006",
-      "name": "Shorts",
-      "category": "Footwear",
-      "price": 40000,
-      "image": "images/uploads/picture1.png",
-      "sizes": [],
-      "desc": "fsdsdf"
     }
   ]
 }
