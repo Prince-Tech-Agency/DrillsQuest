@@ -10,7 +10,7 @@ collections:
   - name: "products"
     label: "Products"
     files:
-      - file: "content/products.json"
+      - file: "site/content/products.json"
         label: "Product Catalog"
         name: "products"
         fields:
