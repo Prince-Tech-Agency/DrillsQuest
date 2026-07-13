@@ -95,6 +95,15 @@
         }
       ],
       "desc": "ADADFADFAFD"
+    },
+    {
+      "id": "DR-006",
+      "name": "Shorts",
+      "category": "Footwear",
+      "price": 40000,
+      "image": "images/uploads/picture1.png",
+      "sizes": [],
+      "desc": "fsdsdf"
     }
   ]
 }
