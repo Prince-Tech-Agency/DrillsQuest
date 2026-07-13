@@ -15,6 +15,12 @@ const CART_STORAGE_KEY = "onyx_cart_v1";
 const money = (n) => "₦" + n.toLocaleString("en-NG");
 
 /* ---------------------------------------------------------
+   GRID PAGINATION SETTINGS
+--------------------------------------------------------- */
+const PRODUCTS_PER_PAGE = 8; // change this number to show more/fewer per page
+let visibleCount = PRODUCTS_PER_PAGE;
+
+/* ---------------------------------------------------------
    STATE
 --------------------------------------------------------- */
 let PRODUCTS = [];
@@ -89,6 +95,7 @@ function renderFilters(){
   filterBar.querySelectorAll(".filter-btn").forEach(btn => {
     btn.addEventListener("click", () => {
       activeFilter = btn.dataset.filter;
+      visibleCount = PRODUCTS_PER_PAGE;
       renderFilters();
       renderGrid();
     });
@@ -96,14 +103,16 @@ function renderFilters(){
 }
 
 /* ---------------------------------------------------------
-   RENDER: product grid
+   RENDER: product grid (with "See More" pagination)
 --------------------------------------------------------- */
 function renderGrid(){
   const list = activeFilter === "all"
     ? PRODUCTS
     : PRODUCTS.filter(p => p.category === activeFilter);
 
-  productGrid.innerHTML = list.map(p => `
+  const visibleList = list.slice(0, visibleCount);
+
+  productGrid.innerHTML = visibleList.map(p => `
     <article class="product-card">
       <div class="product-media">
         <span class="product-tag">${p.id}</span>
@@ -122,8 +131,8 @@ function renderGrid(){
   `).join("");
 
   productGrid.querySelectorAll(".product-card").forEach((card, i) => {
-    card.querySelector(".product-media img").addEventListener("click", () => openQuickView(list[i]));
-    card.querySelector(".product-name").addEventListener("click", () => openQuickView(list[i]));
+    card.querySelector(".product-media img").addEventListener("click", () => openQuickView(visibleList[i]));
+    card.querySelector(".product-name").addEventListener("click", () => openQuickView(visibleList[i]));
   });
 
   productGrid.querySelectorAll(".quickadd-btn").forEach(btn => {
@@ -131,6 +140,24 @@ function renderGrid(){
       const product = PRODUCTS.find(p => p.id === btn.dataset.id);
       openQuickView(product);
     });
+  });
+
+  renderGridMoreButton(list.length);
+}
+
+function renderGridMoreButton(totalCount){
+  const gridMoreWrap = el("gridMoreWrap");
+  if (!gridMoreWrap) return;
+
+  if (visibleCount >= totalCount){
+    gridMoreWrap.innerHTML = "";
+    return;
+  }
+
+  gridMoreWrap.innerHTML = `<button class="btn btn-primary" id="seeMoreBtn">See More</button>`;
+  gridMoreWrap.querySelector("#seeMoreBtn").addEventListener("click", () => {
+    visibleCount += PRODUCTS_PER_PAGE;
+    renderGrid();
   });
 }
 
