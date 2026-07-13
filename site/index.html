@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DRILLS — Considered Pieces, Held to a Higher Standard</title>
+<meta name="description" content="A small, curated edit of elevated streetwear, footwear, and leather goods.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- announcement -->
+<div class="announce">Members get first access to every drop — join the list below</div>
+
+<!-- header -->
+<header class="site-header" id="siteHeader">
+  <div class="header-inner">
+    <button class="nav-toggle" id="navToggle" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+    <a href="#" class="wordmark">DRILLS</a>
+    <nav class="main-nav" id="mainNav">
+      <a href="#shop">Shop</a>
+      <a href="#about">The House</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <button class="cart-toggle" id="cartToggle" aria-label="Open bag">
+      Bag <span class="cart-count" id="cartCount">0</span>
+    </button>
+  </div>
+</header>
+
+<!-- hero -->
+<section class="hero">
+  <div class="hero-media">
+    <img src="images/Hoodie.jpg" alt="Croc-embossed leather briefcase">
+    <div class="hero-media-frame"></div>
+  </div>
+  <div class="hero-copy">
+    <p class="eyebrow">Season 01 — The Founding Edit</p>
+    <h1>Rare pieces.<br><em>Quiet</em> confidence.</h1>
+    <p class="hero-sub">Four objects, chosen rather than manufactured. No overproduction, no noise — just what's worth owning.</p>
+    <a href="#shop" class="btn btn-primary">Check Our Collection</a>
+  </div>
+</section>
+
+<!-- marquee -->
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track">
+    <span>CURATED IN SMALL RUNS</span><span>·</span>
+    <span>FREE LAGOS DELIVERY OVER ₦75,000</span><span>·</span>
+    <span>ORDER DIRECT ON WHATSAPP</span><span>·</span>
+    <span>CURATED IN SMALL RUNS</span><span>·</span>
+    <span>FREE LAGOS DELIVERY OVER ₦75,000</span><span>·</span>
+    <span>ORDER DIRECT ON WHATSAPP</span><span>·</span>
+  </div>
+</div>
+
+<!-- shop -->
+<section class="shop" id="shop">
+  <div class="section-head">
+    <p class="eyebrow">The Edit</p>
+    <h2>Four pieces, worth the wait</h2>
+  </div>
+
+  <div class="filter-bar" id="filterBar">
+    <button class="filter-btn is-active" data-filter="all">All</button>
+  </div>
+
+  <div class="product-grid" id="productGrid">
+    <!-- injected by script.js -->
+  </div>
+</section>
+
+<!-- about -->
+<section class="about" id="about">
+  <div class="about-inner">
+    <p class="eyebrow">N° 01 — The House</p>
+    <h2>We'd rather sell out than overstock.</h2>
+    <p>DRILLS exists because most of what's sold as "premium" isn't. We hold a small, rotating edit — once a piece is gone, it's gone, and we don't rush a replacement just to keep a shelf full. Every item is inspected by hand before it ships.</p>
+    <div class="about-grid">
+      <div class="about-item">
+        <span class="about-num">01</span>
+        <h3>Hand-checked</h3>
+        <p>Every piece inspected before it leaves our hands — no surprises at your door.</p>
+      </div>
+      <div class="about-item">
+        <span class="about-num">02</span>
+        <h3>Limited runs</h3>
+        <p>What's listed is what exists. We don't reprint sold-out styles.</p>
+      </div>
+      <div class="about-item">
+        <span class="about-num">03</span>
+        <h3>Direct to you</h3>
+        <p>Order straight through WhatsApp — no middlemen, no markup for a showroom.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- footer -->
+<footer class="site-footer" id="contact">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <p class="wordmark">DRILLS</p>
+      <p>Considered pieces, held to a higher standard.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Shop</h4>
+      <a href="#shop">50 Airport road benin city</a>
+      <a href="#about">Edo state, Nigeria</a>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <a href="mailto:drillsquestglobal1@gmail.com">drillsquestglobal1@gmail.com</a>
+      <a href="tel:+2349157312667">+234 915 7312 667</a>
+    </div>
+    <div class="footer-col">
+      <h4>Follow</h4>
+      <a href="#">TikTok - drillsquest fashion mall</a>
+    </div>
+  </div>
+  <p class="footer-legal">© <span id="year"></span> DRILLS. All prices in NGN.</p>
+</footer>
+
+<!-- cart drawer -->
+<div class="overlay" id="overlay"></div>
+<aside class="cart-drawer" id="cartDrawer" aria-label="Shopping bag">
+  <div class="cart-head">
+    <h2>Your bag</h2>
+    <button class="icon-btn" id="cartClose" aria-label="Close bag">&times;</button>
+  </div>
+  <div class="cart-items" id="cartItems">
+    <p class="cart-empty" id="cartEmpty">Your bag is empty.</p>
+  </div>
+  <div class="cart-foot">
+    <div class="cart-subtotal">
+      <span>Subtotal</span>
+      <span id="cartSubtotal">₦0</span>
+    </div>
+    <button class="btn btn-primary btn-block" id="checkoutBtn" disabled>Checkout</button>
+  </div>
+</aside>
+
+<!-- quick view -->
+<div class="modal-overlay" id="quickViewOverlay">
+  <div class="modal quick-view" id="quickViewModal"></div>
+</div>
+
+<!-- checkout -->
+<div class="modal-overlay" id="checkoutOverlay">
+  <div class="modal checkout-modal">
+    <button class="icon-btn modal-close" id="checkoutClose" aria-label="Close">&times;</button>
+    <h2>Review your order</h2>
+    <p class="checkout-total">Order total: <strong id="checkoutTotal">₦0</strong></p>
+    <form id="checkoutForm">
+      <label>Full name
+        <input type="text" name="name" required autocomplete="name">
+      </label>
+      <label>Email (optional)
+        <input type="email" name="email" autocomplete="email">
+      </label>
+      <label>Phone
+        <input type="tel" name="phone" required autocomplete="tel">
+      </label>
+      <label>Delivery address
+        <textarea name="address" rows="3" required autocomplete="street-address"></textarea>
+      </label>
+      <button type="submit" class="btn btn-primary btn-block" id="payBtn">Send order on WhatsApp</button>
+      <p class="checkout-note">We'll open WhatsApp with your order filled in — just hit send, and we'll confirm payment and delivery with you directly.</p>
+    </form>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="script.js"></script>
+</body>
+</html>

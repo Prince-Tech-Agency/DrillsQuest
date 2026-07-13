@@ -1,0 +1,36 @@
+backend:
+  name: git-gateway
+  branch: main
+
+# Where uploaded product photos get saved, and how the site links to them
+media_folder: "images/uploads"
+public_folder: "images/uploads"
+
+collections:
+  - name: "products"
+    label: "Products"
+    files:
+      - file: "content/products.json"
+        label: "Product Catalog"
+        name: "products"
+        fields:
+          - label: "Products"
+            name: "products"
+            widget: "list"
+            summary: "{{fields.name}} — ₦{{fields.price}}"
+            fields:
+              - { label: "Product ID (keep unique, e.g. DR-005)", name: "id", widget: "string" }
+              - { label: "Name", name: "name", widget: "string" }
+              - label: "Category"
+                name: "category"
+                widget: "select"
+                options: ["Tops", "Footwear", "Bags"]
+              - { label: "Price (NGN)", name: "price", widget: "number", value_type: "int", min: 0 }
+              - { label: "Photo", name: "image", widget: "image" }
+              - label: "Available sizes"
+                name: "sizes"
+                widget: "list"
+                fields:
+                  - { label: "Size", name: "size", widget: "string" }
+              - { label: "Limited stock note (leave blank if not limited)", name: "limited", widget: "string", required: false }
+              - { label: "Description", name: "desc", widget: "text" }
