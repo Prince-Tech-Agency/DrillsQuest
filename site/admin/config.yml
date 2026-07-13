@@ -3,7 +3,7 @@ backend:
   branch: main
 
 # Where uploaded product photos get saved, and how the site links to them
-media_folder: "images/uploads"
+media_folder: "site/images/uploads"
 public_folder: "images/uploads"
 
 collections:
