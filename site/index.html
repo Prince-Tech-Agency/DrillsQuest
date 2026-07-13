@@ -11,11 +11,13 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 <script>
   if (window.netlifyIdentity) {
+    window.netlifyIdentity.on("login", () => {
+      document.location.href = "/admin/";
+    });
     window.netlifyIdentity.on("init", user => {
-      // Only redirect to admin if there's an invite/recovery token in the URL
       if (!user && window.location.hash && window.location.hash.includes("token")) {
         window.netlifyIdentity.open();
       }
