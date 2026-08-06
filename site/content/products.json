@@ -79,25 +79,6 @@
       ],
       "limited": "",
       "desc": "Structured croc-embossed leather briefcase with dual front pockets, secure top lock, and a padded top handle."
-    },
-    {
-      "id": "Dr-005",
-      "name": "Name of the product",
-      "category": "Tops",
-      "price": 49999,
-      "image": "images/uploads/belt-ladies.jpeg",
-      "sizes": [
-        {
-          "size": "S"
-        },
-        {
-          "size": "M"
-        },
-        {
-          "size": "L"
-        }
-      ],
-      "desc": "THis is a test run product i hope you understood the steps"
     }
   ]
 }
