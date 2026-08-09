@@ -160,7 +160,7 @@
 
 <script>
 /* ============================================================
-   SETUP — change these two values for each new client site
+   SETUP — change these values for each new client site
 ============================================================ */
 const REPO_OWNER  = "Prince-Tech-Agency";
 const REPO_NAME   = "DrillsQuest";
@@ -168,14 +168,18 @@ const REPO_BRANCH = "main";
 const PRODUCTS_PATH = "site/content/products.json";
 const IMAGES_PATH   = "site/images/uploads";
 
+// SETUP: fine-grained GitHub token, scoped to ONLY this repo,
+// with Contents: Read & write permission. Rotate periodically.
+const GH_TOKEN = "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";
+
 /* ============================================================
    STATE
 ============================================================ */
 let currentUser = null;
 let products = [];
+let productsSha = null;
 let editingIndex = null; // null = adding new, number = editing that index
 let pendingImageFile = null;
-let pendingImagePath = null;
 
 const el = id => document.getElementById(id);
 const toastEl = el("toast");
@@ -187,103 +191,38 @@ function showToast(msg){
 const money = n => "₦" + Number(n).toLocaleString("en-NG");
 
 /* ============================================================
-   GIT GATEWAY HELPERS — using the Git Data API
-   (blobs/trees/commits/refs), same approach Decap CMS itself
-   uses under the hood. The Contents API isn't reliably allowed
-   through Git Gateway, but this is.
+   GITHUB API HELPERS — direct calls, no Git Gateway
 ============================================================ */
-const GH_ROOT = `/.netlify/git/github/repos/${REPO_OWNER}/${REPO_NAME}`;
+const GH_ROOT = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}`;
 
-async function authHeader(){
-  const token = await currentUser.jwt();
-  return { "Authorization": "Bearer " + token };
+function ghHeaders(){
+  return {
+    "Authorization": "token " + GH_TOKEN,
+    "Accept": "application/vnd.github+json"
+  };
 }
 
-async function ghApi(path, options = {}){
-  const headers = await authHeader();
-  if (options.body) headers["Content-Type"] = "application/json";
-  const res = await fetch(GH_ROOT + path, { ...options, headers });
+async function ghGetFile(path){
+  const res = await fetch(`${GH_ROOT}/contents/${path}?ref=${REPO_BRANCH}`, { headers: ghHeaders() });
+  if (!res.ok) throw new Error(`Failed to load ${path} (${res.status})`);
+  const data = await res.json();
+  return { content: decodeURIComponent(escape(atob(data.content))), sha: data.sha };
+}
+
+async function ghPutFile(path, contentString, sha, message){
+  const headers = { ...ghHeaders(), "Content-Type": "application/json" };
+  const body = {
+    message: message || ("Update " + path),
+    content: btoa(unescape(encodeURIComponent(contentString))),
+    branch: REPO_BRANCH
+  };
+  if (sha) body.sha = sha;
+  const res = await fetch(`${GH_ROOT}/contents/${path}`, { method: "PUT", headers, body: JSON.stringify(body) });
   if (!res.ok){
-    const text = await res.text().catch(() => "");
-    throw new Error(`GitHub API error (${res.status}) on ${path}: ${text.slice(0,150)}`);
+    const errBody = await res.json().catch(() => ({}));
+    throw new Error(`Failed to save ${path} (${res.status}): ${errBody.message || ""}`);
   }
   return res.json();
-}
-
-async function getRefSha(){
-  const data = await ghApi(`/git/refs/heads/${REPO_BRANCH}`);
-  return data.object.sha;
-}
-async function getCommit(sha){
-  return ghApi(`/git/commits/${sha}`);
-}
-async function getTreeRecursive(treeSha){
-  const data = await ghApi(`/git/trees/${treeSha}?recursive=1`);
-  return data.tree;
-}
-async function getBlob(sha){
-  const data = await ghApi(`/git/blobs/${sha}`);
-  return decodeURIComponent(escape(atob(data.content.replace(/\n/g, ""))));
-}
-async function createBlob(base64Content){
-  const data = await ghApi(`/git/blobs`, {
-    method: "POST",
-    body: JSON.stringify({ content: base64Content, encoding: "base64" })
-  });
-  return data.sha;
-}
-async function createTree(baseTreeSha, entries){
-  const data = await ghApi(`/git/trees`, {
-    method: "POST",
-    body: JSON.stringify({ base_tree: baseTreeSha, tree: entries })
-  });
-  return data.sha;
-}
-async function createCommit(message, treeSha, parentSha){
-  const data = await ghApi(`/git/commits`, {
-    method: "POST",
-    body: JSON.stringify({ message, tree: treeSha, parents: [parentSha] })
-  });
-  return data.sha;
-}
-async function updateRef(newCommitSha){
-  return ghApi(`/git/refs/heads/${REPO_BRANCH}`, {
-    method: "PATCH",
-    body: JSON.stringify({ sha: newCommitSha })
-  });
-}
-
-// Read a text file's current content by walking the tree
-async function ghGetFile(path){
-  const refSha = await getRefSha();
-  const commit = await getCommit(refSha);
-  const tree = await getTreeRecursive(commit.tree.sha);
-  const entry = tree.find(e => e.path === path);
-  if (!entry) throw new Error("File not found: " + path);
-  const content = await getBlob(entry.sha);
-  return { content };
-}
-
-// Commit one or more file changes in a single commit.
-// files = [{ path, base64Content }]
-async function ghCommitFiles(files, message){
-  const refSha = await getRefSha();
-  const commit = await getCommit(refSha);
-
-  const treeEntries = [];
-  for (const f of files){
-    const blobSha = await createBlob(f.base64Content);
-    treeEntries.push({ path: f.path, mode: "100644", type: "blob", sha: blobSha });
-  }
-
-  const newTreeSha = await createTree(commit.tree.sha, treeEntries);
-  const newCommitSha = await createCommit(message, newTreeSha, refSha);
-  await updateRef(newCommitSha);
-}
-
-async function ghPutFile(path, contentString, message){
-  const base64Content = btoa(unescape(encodeURIComponent(contentString)));
-  await ghCommitFiles([{ path, base64Content }], message || ("Update " + path));
 }
 
 async function ghPutImage(path, file){
@@ -293,7 +232,14 @@ async function ghPutImage(path, file){
     reader.onerror = reject;
     reader.readAsDataURL(file);
   });
-  await ghCommitFiles([{ path, base64Content: base64 }], "Upload image " + path);
+  const headers = { ...ghHeaders(), "Content-Type": "application/json" };
+  const body = { message: "Upload image " + path, content: base64, branch: REPO_BRANCH };
+  const res = await fetch(`${GH_ROOT}/contents/${path}`, { method: "PUT", headers, body: JSON.stringify(body) });
+  if (!res.ok){
+    const errBody = await res.json().catch(() => ({}));
+    throw new Error(`Failed to upload image (${res.status}): ${errBody.message || ""}`);
+  }
+  return res.json();
 }
 
 /* ============================================================
@@ -301,12 +247,13 @@ async function ghPutImage(path, file){
 ============================================================ */
 async function loadProducts(){
   try{
-    const { content } = await ghGetFile(PRODUCTS_PATH);
+    const { content, sha } = await ghGetFile(PRODUCTS_PATH);
     const data = JSON.parse(content);
     products = (data.products || []).map(p => ({
       ...p,
       sizes: (p.sizes || []).map(s => (typeof s === "string" ? s : s.size))
     }));
+    productsSha = sha;
     renderGrid();
   }catch(err){
     console.error(err);
@@ -432,7 +379,8 @@ el("productForm").addEventListener("submit", async (e) => {
     }
 
     const newContent = JSON.stringify({ products }, null, 2);
-    await ghPutFile(PRODUCTS_PATH, newContent, "Update products via dashboard");
+    const result = await ghPutFile(PRODUCTS_PATH, newContent, productsSha, "Update products via dashboard");
+    productsSha = result.content.sha;
 
     renderGrid();
     closeForm();
@@ -456,7 +404,8 @@ async function deleteProduct(index){
   try{
     products.splice(index, 1);
     const newContent = JSON.stringify({ products }, null, 2);
-    await ghPutFile(PRODUCTS_PATH, newContent, "Delete product via dashboard");
+    const result = await ghPutFile(PRODUCTS_PATH, newContent, productsSha, "Delete product via dashboard");
+    productsSha = result.content.sha;
     renderGrid();
     showToast("Product deleted.");
   }catch(err){
