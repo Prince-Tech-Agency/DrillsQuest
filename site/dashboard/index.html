@@ -197,7 +197,7 @@ const GH_ROOT = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}`;
 
 function ghHeaders(){
   return {
-    "Authorization": "token " + GH_TOKEN,
+    "Authorization": "Bearer " + GH_TOKEN,
     "Accept": "application/vnd.github+json"
   };
 }
@@ -448,4 +448,3 @@ netlifyIdentity.init();
 </script>
 </body>
 </html>
- 
