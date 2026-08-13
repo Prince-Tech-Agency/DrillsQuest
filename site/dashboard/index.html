@@ -17,7 +17,6 @@
   h1,h2,h3{font-family:var(--font-display);}
   .wrap{max-width:1100px; margin:0 auto; padding:2rem 1.5rem;}
 
-  /* login screen */
   #loginScreen{display:flex; align-items:center; justify-content:center; min-height:100vh; flex-direction:column; gap:1.5rem;}
   #loginScreen h1{font-size:2rem; letter-spacing:0.05em;}
   #loginScreen p{color:var(--ink-soft);}
@@ -32,12 +31,10 @@
   .btn-danger{border-color:#c65b5b; color:#c65b5b; background:transparent;}
   .btn-danger:hover{background:#c65b5b; color:#fff;}
 
-  /* header */
   header{display:flex; justify-content:space-between; align-items:center; margin-bottom:2.5rem; border-bottom:1px solid var(--line); padding-bottom:1.5rem;}
   header .wordmark{font-size:1.4rem; letter-spacing:0.1em;}
   header .wordmark span{color:var(--gold);}
 
-  /* product grid */
   .toolbar{display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;}
   .grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); gap:1.25rem;}
   .card{background:var(--surface); border:1px solid var(--line); border-radius:4px; overflow:hidden; transition:border-color .2s;}
@@ -51,7 +48,6 @@
   .card .actions{display:flex; gap:0.5rem; padding:0 0.9rem 0.9rem;}
   .card .actions button{flex:1; padding:0.5rem; font-size:0.72rem;}
 
-  /* modal / form */
   .overlay{position:fixed; inset:0; background:rgba(0,0,0,0.7); display:none; align-items:center; justify-content:center; z-index:50; padding:1.5rem;}
   .overlay.show{display:flex;}
   .modal{background:var(--surface); border:1px solid var(--line); max-width:520px; width:100%; max-height:88vh; overflow-y:auto; padding:2rem; border-radius:4px;}
@@ -82,14 +78,12 @@
 </head>
 <body>
 
-<!-- LOGIN SCREEN -->
 <div id="loginScreen">
   <h1>DRILLS <span style="color:var(--gold)">Dashboard</span></h1>
   <p>Please log in to manage products.</p>
   <button class="btn" id="loginBtn">Log in</button>
 </div>
 
-<!-- DASHBOARD (hidden until logged in) -->
 <div class="wrap" id="dashboard" style="display:none;">
   <header>
     <div class="wordmark">DRILLS <span>Dashboard</span></div>
@@ -106,7 +100,6 @@
   </div>
 </div>
 
-<!-- ADD/EDIT MODAL -->
 <div class="overlay" id="formOverlay">
   <div class="modal">
     <h2 id="formTitle">Add product</h2>
@@ -160,24 +153,14 @@
 
 <script>
 /* ============================================================
-   SETUP — change these values for each new client site
-============================================================ */
-const REPO_OWNER  = "Prince-Tech-Agency";
-const REPO_NAME   = "DrillsQuest";
-const REPO_BRANCH = "main";
-const PRODUCTS_PATH = "site/content/products.json";
-const IMAGES_PATH   = "site/images/uploads";
-
-// SETUP: fine-grained GitHub token, scoped to ONLY this repo,
-// with Contents: Read & write permission. Rotate periodically.
-const GH_TOKEN = "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";
-
-/* ============================================================
-   STATE
+   All GitHub API calls (and the token they need) now live in
+   Netlify Functions (see site/netlify/functions/) — this file
+   only ever talks to our own /.netlify/functions/* endpoints,
+   authenticated with the logged-in Netlify Identity user's token.
+   No secret of any kind lives in this file.
 ============================================================ */
 let currentUser = null;
 let products = [];
-let productsSha = null;
 let editingIndex = null; // null = adding new, number = editing that index
 let pendingImageFile = null;
 
@@ -190,70 +173,30 @@ function showToast(msg){
 }
 const money = n => "₦" + Number(n).toLocaleString("en-NG");
 
-/* ============================================================
-   GITHUB API HELPERS — direct calls, no Git Gateway
-============================================================ */
-const GH_ROOT = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}`;
-
-function ghHeaders(){
-  return {
-    "Authorization": "Bearer " + GH_TOKEN,
-    "Accept": "application/vnd.github+json"
-  };
-}
-
-async function ghGetFile(path){
-  const res = await fetch(`${GH_ROOT}/contents/${path}?ref=${REPO_BRANCH}`, { headers: ghHeaders() });
-  if (!res.ok) throw new Error(`Failed to load ${path} (${res.status})`);
-  const data = await res.json();
-  return { content: decodeURIComponent(escape(atob(data.content))), sha: data.sha };
-}
-
-async function ghPutFile(path, contentString, sha, message){
-  const headers = { ...ghHeaders(), "Content-Type": "application/json" };
-  const body = {
-    message: message || ("Update " + path),
-    content: btoa(unescape(encodeURIComponent(contentString))),
-    branch: REPO_BRANCH
-  };
-  if (sha) body.sha = sha;
-  const res = await fetch(`${GH_ROOT}/contents/${path}`, { method: "PUT", headers, body: JSON.stringify(body) });
-  if (!res.ok){
-    const errBody = await res.json().catch(() => ({}));
-    throw new Error(`Failed to save ${path} (${res.status}): ${errBody.message || ""}`);
-  }
-  return res.json();
-}
-
-async function ghPutImage(path, file){
-  const base64 = await new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result.split(",")[1]);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
+async function authFetch(path, options = {}){
+  const user = netlifyIdentity.currentUser();
+  if (!user) throw new Error("You're not logged in.");
+  const token = await user.jwt();
+  const res = await fetch(path, {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token,
+      ...(options.headers || {})
+    }
   });
-  const headers = { ...ghHeaders(), "Content-Type": "application/json" };
-  const body = { message: "Upload image " + path, content: base64, branch: REPO_BRANCH };
-  const res = await fetch(`${GH_ROOT}/contents/${path}`, { method: "PUT", headers, body: JSON.stringify(body) });
-  if (!res.ok){
-    const errBody = await res.json().catch(() => ({}));
-    throw new Error(`Failed to upload image (${res.status}): ${errBody.message || ""}`);
-  }
-  return res.json();
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
+  return data;
 }
 
-/* ============================================================
-   LOAD + RENDER PRODUCTS
-============================================================ */
 async function loadProducts(){
   try{
-    const { content, sha } = await ghGetFile(PRODUCTS_PATH);
-    const data = JSON.parse(content);
+    const data = await authFetch("/.netlify/functions/get-products");
     products = (data.products || []).map(p => ({
       ...p,
       sizes: (p.sizes || []).map(s => (typeof s === "string" ? s : s.size))
     }));
-    productsSha = sha;
     renderGrid();
   }catch(err){
     console.error(err);
@@ -291,9 +234,6 @@ function renderGrid(){
     btn.addEventListener("click", () => deleteProduct(Number(btn.dataset.delete))));
 }
 
-/* ============================================================
-   ADD / EDIT FORM
-============================================================ */
 function openForm(index){
   editingIndex = index;
   pendingImageFile = null;
@@ -307,7 +247,7 @@ function openForm(index){
     el("formTitle").textContent = "Edit product";
     const p = products[index];
     el("fId").value = p.id;
-    el("fId").disabled = true; // keep IDs stable when editing
+    el("fId").disabled = true;
     el("fName").value = p.name;
     el("fCategory").value = p.category;
     el("fPrice").value = p.price;
@@ -343,6 +283,18 @@ el("fImage").addEventListener("change", (e) => {
   reader.readAsDataURL(file);
 });
 
+function fileToBase64(file){
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64 = reader.result.split(",")[1];
+      resolve(base64);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 el("productForm").addEventListener("submit", async (e) => {
   e.preventDefault();
   const saveBtn = el("saveBtn");
@@ -352,13 +304,13 @@ el("productForm").addEventListener("submit", async (e) => {
   try{
     let imagePath = editingIndex !== null ? products[editingIndex].image : null;
 
-    // upload new image if one was selected
     if (pendingImageFile){
-      const safeName = pendingImageFile.name.replace(/[^a-zA-Z0-9.\-_]/g, "-");
-      const uniqueName = Date.now() + "-" + safeName;
-      const fullPath = `${IMAGES_PATH}/${uniqueName}`;
-      await ghPutImage(fullPath, pendingImageFile);
-      imagePath = `${IMAGES_PATH}/${uniqueName}`;
+      const base64 = await fileToBase64(pendingImageFile);
+      const result = await authFetch("/.netlify/functions/upload-image", {
+        method: "POST",
+        body: JSON.stringify({ filename: pendingImageFile.name, base64 })
+      });
+      imagePath = result.path;
     }
 
     const entry = {
@@ -372,16 +324,19 @@ el("productForm").addEventListener("submit", async (e) => {
       desc: el("fDesc").value.trim()
     };
 
+    const nextProducts = [...products];
     if (editingIndex === null){
-      products.push(entry);
+      nextProducts.push(entry);
     }else{
-      products[editingIndex] = entry;
+      nextProducts[editingIndex] = entry;
     }
 
-    const newContent = JSON.stringify({ products }, null, 2);
-    const result = await ghPutFile(PRODUCTS_PATH, newContent, productsSha, "Update products via dashboard");
-    productsSha = result.content.sha;
+    await authFetch("/.netlify/functions/save-products", {
+      method: "POST",
+      body: JSON.stringify({ products: nextProducts })
+    });
 
+    products = nextProducts;
     renderGrid();
     closeForm();
     showToast("Product saved — live in a minute or two.");
@@ -394,30 +349,27 @@ el("productForm").addEventListener("submit", async (e) => {
   }
 });
 
-/* ============================================================
-   DELETE
-============================================================ */
 async function deleteProduct(index){
   const p = products[index];
   if (!confirm(`Delete "${p.name}"? This can't be undone.`)) return;
 
+  const nextProducts = products.filter((_, i) => i !== index);
+
   try{
-    products.splice(index, 1);
-    const newContent = JSON.stringify({ products }, null, 2);
-    const result = await ghPutFile(PRODUCTS_PATH, newContent, productsSha, "Delete product via dashboard");
-    productsSha = result.content.sha;
+    await authFetch("/.netlify/functions/save-products", {
+      method: "POST",
+      body: JSON.stringify({ products: nextProducts })
+    });
+    products = nextProducts;
     renderGrid();
     showToast("Product deleted.");
   }catch(err){
     console.error(err);
     showToast("Error: " + err.message);
-    loadProducts(); // resync in case of failure
+    loadProducts();
   }
 }
 
-/* ============================================================
-   AUTH — Netlify Identity
-============================================================ */
 el("loginBtn").addEventListener("click", () => netlifyIdentity.open("login"));
 el("logoutBtn").addEventListener("click", () => netlifyIdentity.logout());
 
