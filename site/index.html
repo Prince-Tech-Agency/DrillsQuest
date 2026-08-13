@@ -13,16 +13,15 @@
 <body>
 <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 <script>
+  <script>
   if (window.netlifyIdentity) {
-    window.netlifyIdentity.on("login", () => {
-      document.location.href = "/admin/";
-    });
     window.netlifyIdentity.on("init", user => {
       if (!user && window.location.hash && window.location.hash.includes("token")) {
         window.netlifyIdentity.open();
       }
     });
   }
+</script>
 </script>
 <!-- announcement -->
 <div class="announce">Members get first access to every drop — join the list below</div>
