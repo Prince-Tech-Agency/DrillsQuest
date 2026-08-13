@@ -55,20 +55,6 @@
       ],
       "limited": "",
       "desc": "Structured croc-embossed leather briefcase with dual front pockets, secure top lock, and a padded top handle."
-    },
-    {
-      "id": "DR-006",
-      "name": "Glasses",
-      "category": "Tops",
-      "price": 500000,
-      "image": "images/uploads/1786652655369-clutchcuts_logo_1.png",
-      "sizes": [
-        "M",
-        "L",
-        "S"
-      ],
-      "limited": "",
-      "desc": ""
     }
   ]
 }
