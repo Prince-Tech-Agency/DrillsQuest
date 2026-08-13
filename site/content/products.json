@@ -55,6 +55,16 @@
       ],
       "limited": "",
       "desc": "Structured croc-embossed leather briefcase with dual front pockets, secure top lock, and a padded top handle."
+    },
+    {
+      "id": "Bg 007",
+      "name": "Italian",
+      "category": "Bags",
+      "price": 70,
+      "image": "images/uploads/1786654150368-1001800247.jpg",
+      "sizes": [],
+      "limited": "",
+      "desc": ""
     }
   ]
 }
